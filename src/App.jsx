@@ -6,10 +6,21 @@ import { db } from "./data/db";
 
 
 function App() {
+  const initialCart = () => {
+    const localStorageCart = localStorage.getItem('cart');
+    return localStorageCart ? JSON.parse(localStorageCart) : [];
+  }
   //Definir el state
   const [data, setData] = useState(db);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(initialCart());
 
+  //useEffect
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+  ,[cart]);
+
+  //fuctions
   function addToCart(item) {
     const exist = cart.findIndex((i) => i.id === item.id);
     if (exist >= 0) {
