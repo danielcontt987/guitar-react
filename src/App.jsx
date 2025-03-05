@@ -1,63 +1,12 @@
 // import { useState } from "react"
-import { useState, useEffect } from "react"
 import Guitar from "./components/Guitar"
 import Header from "./components/Header"
-import { db } from "./data/db";
+import { useCart } from "./hooks/useCart";
 
 
 function App() {
-  const initialCart = () => {
-    const localStorageCart = localStorage.getItem('cart');
-    return localStorageCart ? JSON.parse(localStorageCart) : [];
-  }
-  //Definir el state
-  const [data, setData] = useState(db);
-  const [cart, setCart] = useState(initialCart());
 
-  //useEffect
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }
-  ,[cart]);
-
-  //fuctions
-  function addToCart(item) {
-    const exist = cart.findIndex((i) => i.id === item.id);
-    if (exist >= 0) {
-      const updatedCart = [...cart];
-      updatedCart[exist].quantity += 1;
-      setCart(updatedCart);
-    }else{
-      item.quantity = 1;
-      setCart((cart) => [...cart, item]);
-    }
-  }
-
-  function removeToCart(id) {
-    const updatedCart = cart.filter((item) => item.id !== id);
-    setCart(updatedCart);
-  }
-
-  function increaseToCard(id) {
-    const exist = cart.findIndex((i) => i.id === id);
-    const updatedCart = [...cart];
-    updatedCart[exist].quantity += 1;
-    setCart(updatedCart);
-  }
-
-  function decreaseToCard(id) {
-    const exist = cart.findIndex((i) => i.id === id);
-    const updatedCart = [...cart];
-    updatedCart[exist].quantity -= 1;
-    setCart(updatedCart);
-    if (updatedCart[exist].quantity === 0) {
-       removeToCart(id);
-    }
-  }
-
-  function removeAllCart() {
-    setCart([]);
-  }
+  const { total, isEmpty, data, cart, addToCart, removeToCart, increaseToCard, decreaseToCard, removeAllCart } = useCart();
 
  
   return (
@@ -68,6 +17,8 @@ function App() {
         increaseToCard={increaseToCard}
         decreaseToCard={decreaseToCard}
         removeAllCart={removeAllCart}
+        total={total}
+        isEmpty={isEmpty}
       />
       <main className="container-xl mt-5">
           <h2 className="text-center">Nuestra Colección</h2>
@@ -77,7 +28,6 @@ function App() {
               <Guitar
                 key={guitar.id} 
                 guitar={guitar}
-                setCart={setCart} 
                 addToCart={addToCart}
               />
             ))}
